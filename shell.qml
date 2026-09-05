@@ -8,12 +8,14 @@ import qs.modules.background
 import qs.modules.taskbar
 import qs.modules.launcher
 import qs.modules.notifs as NotifCenter
+import qs.modules.quick
 
 ShellRoot {
     id: root
 
     property bool launcherOpen: false
     property bool notifOpen: false
+    property bool quickOpen: false
 
     Background {}
     // One taskbar per monitor. Variants injects modelData; Taskbar declares it.
@@ -22,8 +24,20 @@ ShellRoot {
 
         Taskbar {
             onToggleLauncher: root.launcherOpen = !root.launcherOpen
-            onToggleNotifs: root.notifOpen = !root.notifOpen
+            onToggleNotifs: {
+                root.notifOpen = !root.notifOpen;
+                root.quickOpen = false;
+            }
+            onToggleQuick: {
+                root.quickOpen = !root.quickOpen;
+                root.notifOpen = false;
+            }
         }
+    }
+
+    NotifCenter.Notifs {
+        open: root.notifOpen
+        onDismissed: root.notifOpen = false
     }
 
     Launcher {
@@ -31,9 +45,9 @@ ShellRoot {
         onDismissed: root.launcherOpen = false
     }
 
-    NotifCenter.Notifs {
-        open: root.notifOpen
-        onDismissed: root.notifOpen = false
+    Quick {
+        open: root.quickOpen
+        onDismissed: root.quickOpen = false
     }
 
     IpcHandler {
@@ -80,5 +94,24 @@ ShellRoot {
         }
 
         target: "notifs"
+    }
+
+    IpcHandler {
+        function toggle(): void {
+            root.quickOpen = !root.quickOpen;
+            root.notifOpen = false;
+        }
+        function open(): void {
+            root.quickOpen = true;
+            root.notifOpen = false;
+        }
+        function close(): void {
+            root.quickOpen = false;
+        }
+        function isOpen(): string {
+            return root.quickOpen ? "1" : "0";
+        }
+
+        target: "quick"
     }
 }

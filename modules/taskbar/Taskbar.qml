@@ -19,6 +19,7 @@ PanelWindow {
 
     signal toggleLauncher()
     signal toggleNotifs()
+    signal toggleQuick()
 
     anchors {
         bottom: true
@@ -191,7 +192,13 @@ PanelWindow {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: Audio.toggleMute()
+                acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+                onClicked: event => {
+                    if (event.button === Qt.MiddleButton)
+                        Audio.toggleMute();
+                    else
+                        root.toggleQuick();
+                }
                 onWheel: event => {
                     if (event.angleDelta.y > 0)
                         Audio.incrementVolume();
