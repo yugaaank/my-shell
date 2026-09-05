@@ -6,11 +6,11 @@ import Quickshell
 import Quickshell.Widgets
 import qs.services
 
-// Bottom taskbar replacing the top bar. Window buttons group by appId
-// (services/Windows.qml, ii TaskbarApps pattern); click cycles + activates
-// (ii DockAppButton.qml:64-71), middle-click closes the front window.
-// ponytail: no pins, no hover previews, icon = raw appId; add
-// heuristicLookup/guessIcon + ScreencopyView preview (ii DockApps.qml:63-227) when missed.
+// Fluent-styled taskbar (see MICROSOFT_UI_REFERENCE.md). Win11 taskbar is
+// edge-flush chrome, so no corner radius here — radii belong to popups.
+// Mica ≈ opaque wallpaper-neutral fill + 1px top light-edge (real tint needs
+// a wallpaper-color probe; see reference §2). Motion uses exact Fluent tokens:
+// direct entrance cubic-bezier(0,0,0,1) @250ms, press feedback @167ms.
 PanelWindow {
     id: root
 
@@ -26,7 +26,19 @@ PanelWindow {
     }
     exclusiveZone: 56
     implicitHeight: 56
-    color: "#cc1a1a2e"
+    color: "#e81e1e30"
+
+    // Fluent "light" pillar: 1px top edge highlight.
+    Rectangle {
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+        height: 1
+        color: "#ffffff"
+        opacity: 0.08
+    }
 
     RowLayout {
         anchors.fill: parent
@@ -39,8 +51,18 @@ PanelWindow {
             text: "☰"
             color: "#cdd6f4"
             font.pixelSize: 20
+            scale: launchArea.pressed ? 0.85 : 1.0
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 167
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0, 0, 0, 1]
+                }
+            }
 
             MouseArea {
+                id: launchArea
                 anchors.fill: parent
                 onClicked: root.toggleLauncher()
             }
@@ -57,6 +79,28 @@ PanelWindow {
 
                 implicitWidth: 44
                 implicitHeight: 44
+
+                // Press physics + entrance (direct entrance token).
+                scale: pressArea.pressed ? 0.85 : 1.0
+                opacity: 0
+
+                Component.onCompleted: opacity = 1
+
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 167
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: [0, 0, 0, 1]
+                    }
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: [0, 0, 0, 1]
+                    }
+                }
 
                 readonly property string iconName: Windows.guessIcon(modelData.appId)
 
@@ -76,7 +120,7 @@ PanelWindow {
                     font.bold: true
                 }
 
-                // Active underline
+                // Running indicator: fade per gentle-exit pacing.
                 Rectangle {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 2
@@ -84,8 +128,16 @@ PanelWindow {
                     implicitWidth: 20
                     implicitHeight: 3
                     radius: 2
-                    visible: Windows.isActive(modelData)
                     color: "#89b4fa"
+                    opacity: Windows.isActive(modelData) ? 1 : 0
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 167
+                            easing.type: Easing.Bezier
+                            easing.bezierCurve: [1, 0, 1, 1]
+                        }
+                    }
                 }
 
                 // Extra-window dots
@@ -108,6 +160,7 @@ PanelWindow {
                 }
 
                 MouseArea {
+                    id: pressArea
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.MiddleButton
                     onClicked: event => {
