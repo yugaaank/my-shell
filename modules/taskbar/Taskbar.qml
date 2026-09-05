@@ -18,6 +18,7 @@ PanelWindow {
     screen: modelData
 
     signal toggleLauncher()
+    signal toggleNotifs()
 
     anchors {
         bottom: true
@@ -200,13 +201,38 @@ PanelWindow {
             }
         }
 
-        Text {
-            color: "#cdd6f4"
-            text: Qt.formatDateTime(clock.date, "HH:mm")
+        Item {
+            implicitWidth: clockRow.implicitWidth
+            implicitHeight: clockRow.implicitHeight
 
-            SystemClock {
-                id: clock
-                precision: SystemClock.Minutes
+            RowLayout {
+                id: clockRow
+                spacing: 6
+
+                // Win11 bell badge: unread dot beside the clock.
+                Rectangle {
+                    Layout.alignment: Qt.AlignVCenter
+                    implicitWidth: 8
+                    implicitHeight: 8
+                    radius: 4
+                    color: "#89b4fa"
+                    visible: Notifs.unread > 0
+                }
+
+                Text {
+                    color: "#cdd6f4"
+                    text: Qt.formatDateTime(clock.date, "HH:mm")
+
+                    SystemClock {
+                        id: clock
+                        precision: SystemClock.Minutes
+                    }
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.toggleNotifs()
             }
         }
     }

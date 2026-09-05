@@ -185,7 +185,7 @@ PanelWindow {
                     }
 
                     delegate: AppCell {
-                        entry: modelData
+                        entry: modelData ?? null
                     }
                 }
 
@@ -220,13 +220,13 @@ PanelWindow {
     component AppCell: Item {
         id: cell
 
-        required property var entry
+        property var entry
         property bool compact: false
 
         implicitWidth: cell.compact ? 160 : 88
         implicitHeight: cell.compact ? 64 : 92
 
-        readonly property string iconName: Windows.guessIcon(cell.entry.appId ?? cell.entry.id)
+        readonly property string iconName: entry ? Windows.guessIcon(entry.appId ?? entry.id) : ""
 
         ColumnLayout {
             anchors.fill: parent
@@ -243,7 +243,7 @@ PanelWindow {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 visible: cell.iconName === ""
-                text: (cell.entry.name ?? "?").charAt(0).toUpperCase()
+                text: (cell.entry?.name ?? "?").charAt(0).toUpperCase()
                 color: "#cdd6f4"
                 font.pixelSize: 22
                 font.bold: true
@@ -257,7 +257,7 @@ PanelWindow {
                 wrapMode: Text.Wrap
                 color: "#cdd6f4"
                 font.pixelSize: 12
-                text: cell.entry.name
+                text: cell.entry?.name ?? ""
             }
         }
 
@@ -265,6 +265,8 @@ PanelWindow {
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             onClicked: event => {
+                if (!cell.entry)
+                    return;
                 if (event.button === Qt.RightButton)
                     Pins.togglePin(cell.entry.id);
                 else
