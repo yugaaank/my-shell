@@ -186,11 +186,51 @@ PanelWindow {
             Layout.fillWidth: true
         }
 
-        Text {
-            color: Audio.muted ? "#f38ba8" : "#a6e3a1"
-            text: Math.round(Audio.volume * 100) + "%"
+        // Win11 system-tray button: network + sound + battery in one click
+        // target. Nerd Font glyphs verified via fc-match against the installed
+        // JetBrainsMono Nerd Font (MDI set).
+        Item {
+            implicitWidth: trayRow.implicitWidth
+            implicitHeight: trayRow.implicitHeight
+            scale: trayArea.pressed ? 0.9 : 1.0
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 167
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0, 0, 0, 1]
+                }
+            }
+
+            RowLayout {
+                id: trayRow
+                spacing: 7
+
+                Text {
+                    color: Devices.wifiEnabled ? "#cdd6f4" : "#6c7086"
+                    font.family: "JetBrainsMono Nerd Font"
+                    font.pixelSize: 17
+                    text: Devices.wifiEnabled ? "\uF0599" : "\uF05AA"
+                }
+
+                Text {
+                    color: (Audio.muted || Audio.volume === 0) ? "#f38ba8" : "#cdd6f4"
+                    font.family: "JetBrainsMono Nerd Font"
+                    font.pixelSize: 17
+                    text: (Audio.muted || Audio.volume === 0) ? "\uF0581" : Audio.volume < 0.5 ? "\uF0580" : "\uF057E"
+                }
+
+                Text {
+                    visible: Devices.batteryAvailable
+                    color: (!Devices.batteryCharging && Devices.batteryPct < 0.2) ? "#f38ba8" : "#cdd6f4"
+                    font.family: "JetBrainsMono Nerd Font"
+                    font.pixelSize: 17
+                    text: Devices.batteryCharging ? "\uF0084" : Devices.batteryPct > 0.85 ? "\uF0082" : Devices.batteryPct > 0.4 ? "\uF0080" : "\uF0079"
+                }
+            }
 
             MouseArea {
+                id: trayArea
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.MiddleButton
                 onClicked: event => {
