@@ -9,6 +9,7 @@ import qs.modules.taskbar
 import qs.modules.launcher
 import qs.modules.notifs as NotifCenter
 import qs.modules.quick
+import qs.modules.toast
 
 ShellRoot {
     id: root
@@ -31,6 +32,18 @@ ShellRoot {
             onToggleQuick: {
                 root.quickOpen = !root.quickOpen;
                 root.notifOpen = false;
+            }
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        Toast {
+            centerOpen: root.notifOpen
+            onToastOpened: {
+                root.notifOpen = true;
+                root.quickOpen = false;
             }
         }
     }

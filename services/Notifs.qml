@@ -16,6 +16,8 @@ Singleton {
     property list<Notif> list: []
     property int unread: 0
     property bool dnd: false
+    property var toastItem: null
+    property bool toastVisible: false
 
     // {appName, items[]} newest-first, ii TaskbarApps grouping shape.
     readonly property var groups: {
@@ -33,10 +35,23 @@ Singleton {
         root.unread = 0;
     }
 
+    function hideToast(): void {
+        root.toastVisible = false;
+        root.toastItem = null;
+    }
+
+    Timer {
+        id: toastTimer
+        interval: 5000
+        onTriggered: root.hideToast()
+    }
+
     function dismiss(id: int): void {
         const target = root.list.find(n => n.notificationId === id);
         if (target?.notification)
             target.notification.dismiss();
+        if (root.toastItem?.notificationId === id)
+            root.hideToast();
         root.list = root.list.filter(n => n.notificationId !== id);
     }
 
@@ -51,6 +66,7 @@ Singleton {
             n.notification?.dismiss();
         root.list = [];
         root.unread = 0;
+        root.hideToast();
     }
 
     function toggleDnd(): void {
@@ -94,8 +110,12 @@ Singleton {
                 notification: notif
             });
             root.list = [rec, ...root.list];
-            if (!root.dnd)
+            if (!root.dnd) {
                 root.unread++;
+                root.toastItem = rec;
+                root.toastVisible = true;
+                toastTimer.restart();
+            }
         }
     }
 }
