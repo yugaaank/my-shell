@@ -9,6 +9,9 @@ local qsAlive = qsIpc .. " launcher isOpen"
 hl.bind("SUPER + Space", hl.dsp.global("launcher:toggle"), { description = "Shell: Toggle launcher" })
 hl.bind("SUPER + Space", hl.dsp.exec_cmd(qsAlive .. " || pkill fuzzel || fuzzel"), { description = "Launcher fallback" })
 
+-- Random wallpaper (SUPER+CTRL+T, cf. dots-hyprland keybinds.lua:49-52).
+hl.bind("CTRL + SUPER + T", hl.dsp.exec_cmd(qsIpc .. " wallpaper random"), { description = "Shell: Random wallpaper" })
+
 -- Workspace scroll lives on the bar (Bar.qml wheel handler); keep
 -- keyboard switching native so the shell never bricks navigation:
 -- (add your own workspace binds here or keep Hypr defaults)

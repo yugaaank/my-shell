@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.services
+import qs.modules.background
 import qs.modules.taskbar
 import qs.modules.launcher
 
@@ -12,6 +13,7 @@ ShellRoot {
 
     property bool launcherOpen: false
 
+    Background {}
     // One taskbar per monitor. Variants injects modelData; Taskbar declares it.
     Variants {
         model: Quickshell.screens
