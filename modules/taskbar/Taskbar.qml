@@ -26,7 +26,10 @@ PanelWindow {
     }
     exclusiveZone: 56
     implicitHeight: 56
-    color: "#e81e1e30"
+    // Win11 dark taskbar: neutral grey acrylic, not blue-black. Translucency
+    // + Hyprland blur rule (hypr/blur.conf) = frosted glass; opaque content
+    // stays crisp because blur only shows through translucent pixels.
+    color: "#b32b2b2b"
 
     // Fluent "light" pillar: 1px top edge highlight.
     Rectangle {
