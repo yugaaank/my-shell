@@ -10,6 +10,7 @@ import qs.modules.launcher
 import qs.modules.notifs as NotifCenter
 import qs.modules.quick
 import qs.modules.toast
+import qs.modules.overview
 
 ShellRoot {
     id: root
@@ -17,6 +18,7 @@ ShellRoot {
     property bool launcherOpen: false
     property bool notifOpen: false
     property bool quickOpen: false
+    property bool overviewOpen: false
 
     Background {}
     // One taskbar per monitor. Variants injects modelData; Taskbar declares it.
@@ -58,6 +60,10 @@ ShellRoot {
         onDismissed: root.launcherOpen = false
     }
 
+    Overview {
+        open: root.overviewOpen
+        onDismissed: root.overviewOpen = false
+    }
     Quick {
         open: root.quickOpen
         onDismissed: root.quickOpen = false
@@ -126,5 +132,31 @@ ShellRoot {
         }
 
         target: "quick"
+    }
+
+    IpcHandler {
+        function toggle(): void {
+            root.overviewOpen = !root.overviewOpen;
+        }
+        function open(): void {
+            root.launcherOpen = false;
+            root.notifOpen = false;
+            root.quickOpen = false;
+            root.overviewOpen = true;
+        }
+        function close(): void {
+            root.overviewOpen = false;
+        }
+        function isOpen(): string {
+            return root.overviewOpen ? "1" : "0";
+        }
+        function count(): string {
+            return `${Windows.wsToplevels.length}`;
+        }
+        function debug(): string {
+            return `activeWs=${Windows.activeWsId}\n${Windows.wsDebug.join("\n")}`;
+        }
+
+        target: "overview"
     }
 }

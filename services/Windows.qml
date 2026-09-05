@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 
 // Window grouping in the ii style (TaskbarApps.qml:23-60): group the
 // compositor-agnostic ToplevelManager.toplevels by appId. No pins, no
@@ -11,6 +12,14 @@ import Quickshell.Wayland
 Singleton {
     id: root
 
+    // Focused workspace straight from Hyprland (no sibling import — Windows
+    // importing qs.services cycles back on itself and breaks resolution).
+    readonly property var activeWsId: Hyprland.focusedWorkspace?.id ?? -1
+    // Flat live windows on the focused workspace: workspace toplevels give
+    // addresses, joined to ToplevelManager objects for previews (the attached
+    // HyprlandToplevel has address but no workspace in qs 0.3.1).
+    readonly property var wsToplevels: (Hyprland.focusedWorkspace?.toplevels.values ?? []).map(hl => ToplevelManager.toplevels.values.find(t => t.HyprlandToplevel?.address === hl.address)).filter(t => t)
+    readonly property var wsDebug: ToplevelManager.toplevels.values.map(t => `${t.appId} hasHl=${!!t.HyprlandToplevel} attachedWs=${t.HyprlandToplevel?.workspace?.id} directWs=${Hyprland.focusedWorkspace?.id}`)
     // Array of {appId, toplevels[]} plain objects.
     readonly property var groups: {
         const map = new Map();

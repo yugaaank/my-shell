@@ -18,6 +18,9 @@ hl.bind("SUPER + N", hl.dsp.exec_cmd(qsIpc .. " notifs toggle"), { description =
 -- Quick Settings (SUPER+A, Win11 Win+A).
 hl.bind("SUPER + A", hl.dsp.exec_cmd(qsIpc .. " quick toggle"), { description = "Shell: Toggle Quick Settings" })
 
+-- Overview spread (SUPER+Tab, cf. dots-hyprland keybinds.lua:23 overviewWorkspacesToggle).
+hl.bind("SUPER + Tab", hl.dsp.exec_cmd(qsIpc .. " overview toggle"), { description = "Shell: Toggle overview" })
+
 -- Workspace scroll lives on the bar (Bar.qml wheel handler); keep
 -- keyboard switching native so the shell never bricks navigation:
 -- (add your own workspace binds here or keep Hypr defaults)

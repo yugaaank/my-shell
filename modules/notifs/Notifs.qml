@@ -228,7 +228,7 @@ PanelWindow {
                         delegate: Rectangle {
                             required property var modelData
 
-                            implicitWidth: parent.width
+                            implicitWidth: parent?.width ?? 0
                             implicitHeight: bodyCol.implicitHeight + 16
                             radius: 6
                             color: "#22ffffff"
