@@ -39,12 +39,16 @@ PanelWindow {
         color: "#ffffff"
         opacity: 0.08
     }
-
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 8
         anchors.rightMargin: 10
         spacing: 4
+
+        // Balance spacer: centers the launcher + window cluster Win11-style.
+        Item {
+            Layout.fillWidth: true
+        }
 
         // Launcher button
         Text {
